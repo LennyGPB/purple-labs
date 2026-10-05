@@ -6,4 +6,5 @@ export type TaskView = {
   hasTime: boolean;
   doneAt: Date | null;
   createdAt: Date;
+  categoryId: string | null;
 };

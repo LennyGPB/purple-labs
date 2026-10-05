@@ -11,6 +11,13 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: NextConfig = {
   turbopack: {},
+  // Anciennes sections regroupées dans Budget.
+  async redirects() {
+    return [
+      { source: "/abonnements", destination: "/budget", permanent: true },
+      { source: "/achats", destination: "/budget", permanent: true },
+    ];
+  },
 };
 
 export default withSerwist(nextConfig);

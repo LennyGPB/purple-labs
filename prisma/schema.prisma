@@ -8,22 +8,32 @@ datasource db {
 }
 
 model Task {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   title         String
-  done          Boolean   @default(false)
+  done          Boolean       @default(false)
   /// Échéance stockée en UTC. Pour une tâche sans heure, minuit (fuseau APP_TIMEZONE) converti en UTC.
-  dueAt         DateTime? @db.Timestamptz(3)
+  dueAt         DateTime?     @db.Timestamptz(3)
   /// true si l'utilisateur a précisé une heure (sinon seule la date compte).
-  hasTime       Boolean   @default(false)
-  doneAt        DateTime? @db.Timestamptz(3)
+  hasTime       Boolean       @default(false)
+  doneAt        DateTime?     @db.Timestamptz(3)
   /// Réservé aux notifications (phase ultérieure) : rappel de la veille envoyé.
-  remindedEveAt DateTime? @db.Timestamptz(3)
+  remindedEveAt DateTime?     @db.Timestamptz(3)
   /// Réservé aux notifications (phase ultérieure) : rappel du jour envoyé.
-  remindedDayAt DateTime? @db.Timestamptz(3)
-  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
+  remindedDayAt DateTime?     @db.Timestamptz(3)
+  createdAt     DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime      @updatedAt @db.Timestamptz(3)
+  categoryId    String?
+  category      TaskCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   @@index([done, dueAt])
+  @@index([categoryId])
+}
+
+model TaskCategory {
+  id        String   @id @default(cuid())
+  name      String
+  tasks     Task[]
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
 }
 
 model Folder {
@@ -60,7 +70,17 @@ model Purchase {
   title      String
   /// Prix en centimes d'euro pour éviter les erreurs d'arrondi.
   priceCents Int
-  /// true = compté dans le total (case cochée dans l'UI).
+  /// true = compté dans le total (case décochée dans l'UI).
   active     Boolean  @default(true)
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+}
+
+model Salary {
+  id         String   @id @default(cuid())
+  title      String
+  /// Montant en centimes d'euro.
+  priceCents Int
+  /// true = reçu, déduit du total (case cochée dans l'UI).
+  active     Boolean  @default(false)
   createdAt  DateTime @default(now()) @db.Timestamptz(3)
 }

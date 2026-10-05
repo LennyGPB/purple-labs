@@ -8,5 +8,3 @@ export type NoteView = {
   updatedAt: Date;
 };
 
-/** Filtre actif : toutes les notes, sans dossier, ou un dossier précis (id). */
-export type FolderFilter = "all" | "none" | string;

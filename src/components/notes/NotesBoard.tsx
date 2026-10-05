@@ -10,15 +10,15 @@ import {
   updateNote,
   type NoteInput,
 } from "@/actions/notes";
-import { NoteIcon, PlusIcon } from "@/components/icons";
+import { FolderIcon, NoteIcon, PlusIcon } from "@/components/icons";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { FilterBar, groupFromFilter, matchesFilter, resolveFilter, type Filter } from "@/components/ui/FilterBar";
+import { NamedItemSheet, type NamedItemSheetTarget } from "@/components/ui/NamedItemSheet";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { FolderBar } from "./FolderBar";
-import { FolderSheet, type FolderSheetTarget } from "./FolderSheet";
 import { NoteCard } from "./NoteCard";
 import { NoteSheet, type NoteSheetTarget } from "./NoteSheet";
-import type { FolderFilter, FolderView, NoteView } from "./types";
+import type { FolderView, NoteView } from "./types";
 
 type OptimisticAction =
   | { type: "upsert"; note: NoteView }
@@ -32,17 +32,14 @@ function reducer(notes: NoteView[], action: OptimisticAction): NoteView[] {
 
 export function NotesBoard({ notes, folders }: { notes: NoteView[]; folders: FolderView[] }) {
   const [optimisticNotes, apply] = useOptimistic(notes, reducer);
-  const [filter, setFilter] = useState<FolderFilter>("all");
+  const [filter, setFilter] = useState<Filter>("all");
   const [noteTarget, setNoteTarget] = useState<NoteSheetTarget>(null);
-  const [folderTarget, setFolderTarget] = useState<FolderSheetTarget>(null);
+  const [folderTarget, setFolderTarget] = useState<NamedItemSheetTarget>(null);
   const [folderPending, startFolderTransition] = useTransition();
 
-  // Si le dossier sélectionné n'existe plus, on revient à « Toutes ».
-  const activeFilter = filter === "all" || filter === "none" || folders.some((f) => f.id === filter) ? filter : "all";
+  const activeFilter = resolveFilter(filter, folders);
   const folderNames = new Map(folders.map((f) => [f.id, f.name]));
-  const visibleNotes = optimisticNotes.filter((n) =>
-    activeFilter === "all" ? true : activeFilter === "none" ? n.folderId === null : n.folderId === activeFilter,
-  );
+  const visibleNotes = optimisticNotes.filter((n) => matchesFilter(n.folderId, activeFilter));
 
   function saveNote(id: string | null, input: NoteInput) {
     setNoteTarget(null);
@@ -78,7 +75,7 @@ export function NotesBoard({ notes, folders }: { notes: NoteView[]; folders: Fol
     });
   }
 
-  const defaultFolderId = activeFilter === "all" || activeFilter === "none" ? null : activeFilter;
+  const defaultFolderId = groupFromFilter(activeFilter);
 
   return (
     <>
@@ -92,9 +89,11 @@ export function NotesBoard({ notes, folders }: { notes: NoteView[]; folders: Fol
         }
       />
 
-      <FolderBar
-        folders={folders}
+      <FilterBar
+        items={folders}
         selected={activeFilter}
+        labels={{ all: "Toutes", none: "Sans dossier", create: "Dossier", edit: "Modifier le dossier" }}
+        icon={<FolderIcon className="size-4" />}
         onSelect={setFilter}
         onCreate={() => setFolderTarget("new")}
         onEdit={setFolderTarget}
@@ -122,8 +121,13 @@ export function NotesBoard({ notes, folders }: { notes: NoteView[]; folders: Fol
         onSave={saveNote}
         onDelete={removeNote}
       />
-      <FolderSheet
+      <NamedItemSheet
         target={folderTarget}
+        labels={{
+          newTitle: "Nouveau dossier",
+          editTitle: "Modifier le dossier",
+          deleteHint: "Supprimer le dossier conserve ses notes (sans dossier).",
+        }}
         pending={folderPending}
         onClose={() => setFolderTarget(null)}
         onSubmit={submitFolder}

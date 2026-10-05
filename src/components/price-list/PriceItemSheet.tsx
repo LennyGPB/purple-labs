@@ -30,6 +30,7 @@ export function PriceItemSheet({ target, labels, onClose, onSave, onDelete }: Pr
           key={item?.id ?? "new"}
           item={item}
           titlePlaceholder={labels.titlePlaceholder}
+          amountLabel={labels.amountLabel}
           onSave={onSave}
           onDelete={onDelete}
         />
@@ -41,9 +42,10 @@ export function PriceItemSheet({ target, labels, onClose, onSave, onDelete }: Pr
 type PriceItemFormProps = Pick<PriceItemSheetProps, "onSave" | "onDelete"> & {
   item: PriceItem | null;
   titlePlaceholder: string;
+  amountLabel: string;
 };
 
-function PriceItemForm({ item, titlePlaceholder, onSave, onDelete }: PriceItemFormProps) {
+function PriceItemForm({ item, titlePlaceholder, amountLabel, onSave, onDelete }: PriceItemFormProps) {
   const [title, setTitle] = useState(item?.title ?? "");
   const [price, setPrice] = useState(item ? centsToInput(item.priceCents) : "");
   const priceCents = parseEurosToCents(price);
@@ -69,7 +71,7 @@ function PriceItemForm({ item, titlePlaceholder, onSave, onDelete }: PriceItemFo
         />
       </Label>
       <Label>
-        Prix (€)
+        {amountLabel}
         <Input
           value={price}
           onChange={(e) => setPrice(e.target.value)}
@@ -79,7 +81,7 @@ function PriceItemForm({ item, titlePlaceholder, onSave, onDelete }: PriceItemFo
           aria-invalid={priceInvalid}
           className={priceInvalid ? "border-rose-400/60" : undefined}
         />
-        {priceInvalid && <span className="text-xs normal-case text-rose-300">Prix invalide (ex. 9,99)</span>}
+        {priceInvalid && <span className="text-xs normal-case text-rose-300">Montant invalide (ex. 9,99)</span>}
       </Label>
       <div className="flex gap-2">
         {item && <ConfirmDeleteButton onConfirm={() => onDelete(item.id)} />}

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { zonedToUtc } from "@/lib/dates";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
-import { isDateInput, isTimeInput, requireId, requireText } from "@/lib/validation";
+import { isDateInput, isTimeInput, optionalId, requireId, requireText } from "@/lib/validation";
 
 export type TaskInput = {
   title: string;
@@ -12,15 +12,17 @@ export type TaskInput = {
   date: string | null;
   /** "HH:mm" dans le fuseau de l'app, ignorée sans date */
   time: string | null;
+  categoryId: string | null;
 };
 
 function toTaskData(input: TaskInput) {
   const title = requireText(input.title, "Titre", 300);
+  const categoryId = optionalId(input.categoryId);
   if (!isDateInput(input.date)) {
-    return { title, dueAt: null, hasTime: false };
+    return { title, categoryId, dueAt: null, hasTime: false };
   }
   const time = isTimeInput(input.time) ? input.time : undefined;
-  return { title, dueAt: zonedToUtc(input.date, time), hasTime: time !== undefined };
+  return { title, categoryId, dueAt: zonedToUtc(input.date, time), hasTime: time !== undefined };
 }
 
 /** Réinitialise les rappels si l'échéance change (utile pour les notifications futures). */

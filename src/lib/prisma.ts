@@ -7,10 +7,23 @@ function createPrismaClient() {
   return new PrismaClient({ adapter: new PrismaNeon({ connectionString: process.env.DATABASE_URL }) });
 }
 
+// Singleton conservé entre les rechargements à chaud en dev.
+// On mémorise aussi la classe : après un `prisma generate` (nouveau modèle), le client généré
+// est rechargé avec une nouvelle classe, et l'ancienne instance est alors remplacée.
 const globalForPrisma = globalThis as unknown as {
-  prisma?: ReturnType<typeof createPrismaClient>;
+  prisma?: PrismaClient;
+  prismaClass?: typeof PrismaClient;
 };
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+function getPrismaClient(): PrismaClient {
+  if (globalForPrisma.prisma && globalForPrisma.prismaClass === PrismaClient) return globalForPrisma.prisma;
+  void globalForPrisma.prisma?.$disconnect();
+  return createPrismaClient();
+}
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+export const prisma = getPrismaClient();
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+  globalForPrisma.prismaClass = PrismaClient;
+}

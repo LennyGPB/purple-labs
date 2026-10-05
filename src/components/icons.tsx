@@ -92,7 +92,23 @@ export const BagIcon = (p: IconProps) => (
   </Icon>
 );
 
-export const FolderIcon =(p: IconProps) => (
+export const BanknoteIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="2.5" y="6" width="19" height="12" rx="2.5" />
+    <circle cx="12" cy="12" r="2.5" />
+    <path d="M6 9.5v5M18 9.5v5" />
+  </Icon>
+);
+
+export const WalletIcon =(p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 7.5a2.5 2.5 0 0 1 2.5-2.5H17v3" />
+    <path d="M4 7.5v10A2.5 2.5 0 0 0 6.5 20h12a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 18.5 8h-12A2.5 2.5 0 0 1 4 7.5z" />
+    <path d="M16 14h.01" />
+  </Icon>
+);
+
+export const FolderIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z" />
   </Icon>
@@ -107,11 +123,5 @@ export const ChevronIcon = (p: IconProps) => (
 export const LogoutIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l-4-4 4-4M6 12h10" />
-  </Icon>
-);
-
-export const FlaskIcon = (p: IconProps) => (
-  <Icon {...p}>
-    <path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6A2 2 0 0 0 19 18l-5-9V3M7.5 15h9" />
   </Icon>
 );

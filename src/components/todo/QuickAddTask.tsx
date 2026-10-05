@@ -8,8 +8,8 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { cn } from "@/lib/cn";
 import { DateTimeFields } from "./DateTimeFields";
 
-/** Barre d'ajout rapide : titre + Entrée, date/heure en option. */
-export function QuickAddTask({ onAdd }: { onAdd: (input: TaskInput) => void }) {
+/** Barre d'ajout rapide : titre + Entrée, date/heure en option. La catégorie est fixée par le parent. */
+export function QuickAddTask({ onAdd }: { onAdd: (input: Omit<TaskInput, "categoryId">) => void }) {
   const [title, setTitle] = useState("");
   const [showDate, setShowDate] = useState(false);
   const [due, setDue] = useState({ date: "", time: "" });

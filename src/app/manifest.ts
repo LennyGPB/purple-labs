@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "PurpleLabs",
     short_name: "PurpleLabs",
-    description: "TODO, notes et abonnements",
+    description: "TODO, notes et budget",
     lang: "fr",
     start_url: "/todo",
     scope: "/",
