@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Task {
+  id            String    @id @default(cuid())
+  title         String
+  done          Boolean   @default(false)
+  /// Échéance stockée en UTC. Pour une tâche sans heure, minuit (fuseau APP_TIMEZONE) converti en UTC.
+  dueAt         DateTime? @db.Timestamptz(3)
+  /// true si l'utilisateur a précisé une heure (sinon seule la date compte).
+  hasTime       Boolean   @default(false)
+  doneAt        DateTime? @db.Timestamptz(3)
+  /// Réservé aux notifications (phase ultérieure) : rappel de la veille envoyé.
+  remindedEveAt DateTime? @db.Timestamptz(3)
+  /// Réservé aux notifications (phase ultérieure) : rappel du jour envoyé.
+  remindedDayAt DateTime? @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
+
+  @@index([done, dueAt])
+}
+
+model Folder {
+  id        String   @id @default(cuid())
+  name      String
+  notes     Note[]
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @default("")
+  folderId  String?
+  folder    Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([folderId])
+}
+
+model Subscription {
+  id         String   @id @default(cuid())
+  title      String
+  /// Prix en centimes d'euro pour éviter les erreurs d'arrondi.
+  priceCents Int
+  /// true = compté dans le total (case décochée dans l'UI).
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+}
