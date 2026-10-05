@@ -10,8 +10,8 @@ export type PriceItem = {
 
 /**
  * Sens de la case à cocher :
- * - "excluded" : cochée = retirée du total (abonnements, achats) ;
- * - "counted" : cochée = prise en compte (salaire reçu).
+ * - "excluded" : cochée = retirée du total (abonnements) ;
+ * - "counted" : cochée = prise en compte (achats, salaire reçu).
  */
 export type CheckedMeans = "excluded" | "counted";
 

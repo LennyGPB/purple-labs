@@ -70,8 +70,8 @@ model Purchase {
   title      String
   /// Prix en centimes d'euro pour éviter les erreurs d'arrondi.
   priceCents Int
-  /// true = compté dans le total (case décochée dans l'UI).
-  active     Boolean  @default(true)
+  /// true = compté dans le total (case cochée dans l'UI).
+  active     Boolean  @default(false)
   createdAt  DateTime @default(now()) @db.Timestamptz(3)
 }
 

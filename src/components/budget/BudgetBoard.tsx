@@ -48,7 +48,7 @@ const tabs: Record<Tab, { label: string; icon: ReactNode; labels: PriceListLabel
       editItem: "Modifier l'article",
       titlePlaceholder: "Casque, chaussures…",
       amountLabel: "Prix (€)",
-      checkLabel: "Retirer du total",
+      checkLabel: "Compter dans le total",
       countWord: "compté",
     },
   },
@@ -100,7 +100,7 @@ export function BudgetBoard({ subscriptions, purchases, salaries }: BudgetBoardP
   const [target, setTarget] = useState<PriceItemSheetTarget>(null);
   const lists = {
     abonnements: usePriceList(subscriptions, subscriptionActions, "excluded"),
-    achats: usePriceList(purchases, purchaseActions, "excluded"),
+    achats: usePriceList(purchases, purchaseActions, "counted"),
     salaire: usePriceList(salaries, salaryActions, "counted"),
   };
   const current = lists[tab];
