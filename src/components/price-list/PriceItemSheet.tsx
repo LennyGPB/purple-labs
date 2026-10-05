@@ -1,33 +1,35 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import type { SubscriptionInput } from "@/actions/subscriptions";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDeleteButton } from "@/components/ui/ConfirmDeleteButton";
 import { Input, Label } from "@/components/ui/Field";
 import { Sheet } from "@/components/ui/Sheet";
 import { centsToInput, parseEurosToCents } from "@/lib/money";
-import type { SubscriptionView } from "./types";
+import type { PriceItemInput } from "@/lib/price-item";
+import type { PriceItem, PriceListLabels } from "./types";
 
-/** null = fermé ; "new" = création ; SubscriptionView = édition. */
-export type SubscriptionSheetTarget = null | "new" | SubscriptionView;
+/** null = fermé ; "new" = création ; PriceItem = édition. */
+export type PriceItemSheetTarget = null | "new" | PriceItem;
 
-type SubscriptionSheetProps = {
-  target: SubscriptionSheetTarget;
+type PriceItemSheetProps = {
+  target: PriceItemSheetTarget;
+  labels: PriceListLabels;
   onClose: () => void;
-  onSave: (id: string | null, input: SubscriptionInput) => void;
+  onSave: (id: string | null, input: PriceItemInput) => void;
   onDelete: (id: string) => void;
 };
 
-export function SubscriptionSheet({ target, onClose, onSave, onDelete }: SubscriptionSheetProps) {
-  const subscription = target === "new" ? null : target;
+export function PriceItemSheet({ target, labels, onClose, onSave, onDelete }: PriceItemSheetProps) {
+  const item = target === "new" ? null : target;
 
   return (
-    <Sheet open={target !== null} onClose={onClose} title={subscription ? "Modifier l'abonnement" : "Nouvel abonnement"}>
+    <Sheet open={target !== null} onClose={onClose} title={item ? labels.editItem : labels.newItem}>
       {target && (
-        <SubscriptionForm
-          key={subscription?.id ?? "new"}
-          subscription={subscription}
+        <PriceItemForm
+          key={item?.id ?? "new"}
+          item={item}
+          titlePlaceholder={labels.titlePlaceholder}
           onSave={onSave}
           onDelete={onDelete}
         />
@@ -36,20 +38,21 @@ export function SubscriptionSheet({ target, onClose, onSave, onDelete }: Subscri
   );
 }
 
-type SubscriptionFormProps = Pick<SubscriptionSheetProps, "onSave" | "onDelete"> & {
-  subscription: SubscriptionView | null;
+type PriceItemFormProps = Pick<PriceItemSheetProps, "onSave" | "onDelete"> & {
+  item: PriceItem | null;
+  titlePlaceholder: string;
 };
 
-function SubscriptionForm({ subscription, onSave, onDelete }: SubscriptionFormProps) {
-  const [title, setTitle] = useState(subscription?.title ?? "");
-  const [price, setPrice] = useState(subscription ? centsToInput(subscription.priceCents) : "");
+function PriceItemForm({ item, titlePlaceholder, onSave, onDelete }: PriceItemFormProps) {
+  const [title, setTitle] = useState(item?.title ?? "");
+  const [price, setPrice] = useState(item ? centsToInput(item.priceCents) : "");
   const priceCents = parseEurosToCents(price);
   const priceInvalid = price.trim() !== "" && priceCents === null;
 
   function submit(e: FormEvent) {
     e.preventDefault();
     if (!title.trim() || priceCents === null) return;
-    onSave(subscription?.id ?? null, { title: title.trim(), priceCents });
+    onSave(item?.id ?? null, { title: title.trim(), priceCents });
   }
 
   return (
@@ -59,10 +62,10 @@ function SubscriptionForm({ subscription, onSave, onDelete }: SubscriptionFormPr
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Netflix, Spotify…"
+          placeholder={titlePlaceholder}
           maxLength={120}
           required
-          autoFocus={!subscription}
+          autoFocus={!item}
         />
       </Label>
       <Label>
@@ -79,7 +82,7 @@ function SubscriptionForm({ subscription, onSave, onDelete }: SubscriptionFormPr
         {priceInvalid && <span className="text-xs normal-case text-rose-300">Prix invalide (ex. 9,99)</span>}
       </Label>
       <div className="flex gap-2">
-        {subscription && <ConfirmDeleteButton onConfirm={() => onDelete(subscription.id)} />}
+        {item && <ConfirmDeleteButton onConfirm={() => onDelete(item.id)} />}
         <Button type="submit" className="flex-1" disabled={!title.trim() || priceCents === null}>
           Enregistrer
         </Button>

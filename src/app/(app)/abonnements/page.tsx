@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
-import { SubscriptionsBoard } from "@/components/subscriptions/SubscriptionsBoard";
+import {
+  createSubscription,
+  deleteSubscription,
+  setSubscriptionActive,
+  uncheckAllSubscriptions,
+  updateSubscription,
+} from "@/actions/subscriptions";
+import { CardIcon } from "@/components/icons";
+import { PriceListBoard } from "@/components/price-list/PriceListBoard";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 
@@ -12,5 +20,25 @@ export default async function SubscriptionsPage() {
     orderBy: { createdAt: "asc" },
   });
 
-  return <SubscriptionsBoard subscriptions={subscriptions} />;
+  return (
+    <PriceListBoard
+      items={subscriptions}
+      checkedMeans="excluded"
+      emptyIcon={<CardIcon />}
+      labels={{
+        title: "Abonnements",
+        emptyText: "Aucun abonnement. Ajoute le premier.",
+        newItem: "Nouvel abonnement",
+        editItem: "Modifier l'abonnement",
+        titlePlaceholder: "Netflix, Spotify…",
+      }}
+      actions={{
+        create: createSubscription,
+        update: updateSubscription,
+        setActive: setSubscriptionActive,
+        uncheckAll: uncheckAllSubscriptions,
+        remove: deleteSubscription,
+      }}
+    />
+  );
 }

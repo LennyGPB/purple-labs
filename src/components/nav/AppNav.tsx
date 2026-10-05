@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ComponentType, SVGProps } from "react";
 import { logout } from "@/actions/auth";
-import { CardIcon, ChecklistIcon, FlaskIcon, LogoutIcon, NoteIcon } from "@/components/icons";
+import { BagIcon, CardIcon, ChecklistIcon, FlaskIcon, LogoutIcon, NoteIcon } from "@/components/icons";
 import { cn } from "@/lib/cn";
 
 type NavItem = { href: string; label: string; icon: ComponentType<SVGProps<SVGSVGElement>> };
@@ -13,6 +13,7 @@ const items: NavItem[] = [
   { href: "/todo", label: "TODO", icon: ChecklistIcon },
   { href: "/notes", label: "Notes", icon: NoteIcon },
   { href: "/abonnements", label: "Abonnements", icon: CardIcon },
+  { href: "/achats", label: "Achats", icon: BagIcon },
 ];
 
 function LogoutButton({ className, withLabel = false }: { className?: string; withLabel?: boolean }) {

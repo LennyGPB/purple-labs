@@ -85,7 +85,14 @@ export const CardIcon = (p: IconProps) => (
   </Icon>
 );
 
-export const FolderIcon = (p: IconProps) => (
+export const BagIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5.5 8h13l-1 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5z" />
+    <path d="M9 10V6.5a3 3 0 0 1 6 0V10" />
+  </Icon>
+);
+
+export const FolderIcon =(p: IconProps) => (
   <Icon {...p}>
     <path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z" />
   </Icon>

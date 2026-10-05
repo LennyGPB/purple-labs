@@ -54,3 +54,13 @@ model Subscription {
   active     Boolean  @default(true)
   createdAt  DateTime @default(now()) @db.Timestamptz(3)
 }
+
+model Purchase {
+  id         String   @id @default(cuid())
+  title      String
+  /// Prix en centimes d'euro pour éviter les erreurs d'arrondi.
+  priceCents Int
+  /// true = compté dans le total (case cochée dans l'UI).
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+}
