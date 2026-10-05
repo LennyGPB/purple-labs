@@ -18,9 +18,10 @@ export async function updateSubscription(id: string, input: PriceItemInput): Pro
   revalidatePath("/budget");
 }
 
-export async function setSubscriptionActive(id: string, active: boolean): Promise<void> {
+/** done = true : abonnement payé. */
+export async function setSubscriptionDone(id: string, done: boolean): Promise<void> {
   await requireSession();
-  await prisma.subscription.update({ where: { id: requireId(id) }, data: { active: Boolean(active) } });
+  await prisma.subscription.update({ where: { id: requireId(id) }, data: { done: Boolean(done) } });
   revalidatePath("/budget");
 }
 

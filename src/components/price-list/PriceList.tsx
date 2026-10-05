@@ -10,7 +10,6 @@ import type { PriceItem } from "./types";
 
 type PriceListProps = {
   items: PriceItem[];
-  isChecked: (item: PriceItem) => boolean;
   checkLabel: string;
   emptyText: string;
   emptyIcon: ReactNode;
@@ -18,8 +17,8 @@ type PriceListProps = {
   onOpen: (item: PriceItem) => void;
 };
 
-/** Liste titre + montant. Les éléments non pris en compte dans le total sont grisés et barrés. */
-export function PriceList({ items, isChecked, checkLabel, emptyText, emptyIcon, onToggle, onOpen }: PriceListProps) {
+/** Liste titre + montant. Case cochée = c'est fait ; les éléments faits sont atténués. */
+export function PriceList({ items, checkLabel, emptyText, emptyIcon, onToggle, onOpen }: PriceListProps) {
   if (items.length === 0) return <EmptyState icon={emptyIcon}>{emptyText}</EmptyState>;
 
   return (
@@ -28,7 +27,7 @@ export function PriceList({ items, isChecked, checkLabel, emptyText, emptyIcon, 
         {items.map((item) => (
           <li key={item.id} className="flex animate-fade-in items-center gap-3 px-4 py-3.5">
             <Checkbox
-              checked={isChecked(item)}
+              checked={item.done}
               label={`${checkLabel} : ${item.title}`}
               onChange={(checked) => onToggle(item, checked)}
             />
@@ -40,7 +39,7 @@ export function PriceList({ items, isChecked, checkLabel, emptyText, emptyIcon, 
               <span
                 className={cn(
                   "truncate text-[15px] transition-colors duration-200",
-                  item.active ? "text-white" : "text-zinc-500",
+                  item.done ? "text-zinc-400" : "text-white",
                 )}
               >
                 {item.title}
@@ -48,7 +47,7 @@ export function PriceList({ items, isChecked, checkLabel, emptyText, emptyIcon, 
               <span
                 className={cn(
                   "shrink-0 text-sm tabular-nums transition-colors duration-200",
-                  item.active ? "text-zinc-200" : "text-zinc-600 line-through",
+                  item.done ? "text-zinc-500" : "text-zinc-200",
                 )}
               >
                 {formatEuros(item.priceCents)}

@@ -4,22 +4,15 @@ export type PriceItem = {
   id: string;
   title: string;
   priceCents: number;
-  /** true = pris en compte dans le total de sa liste */
-  active: boolean;
+  /** Case cochée = c'est fait (payé, acheté, reçu). */
+  done: boolean;
 };
-
-/**
- * Sens de la case à cocher :
- * - "excluded" : cochée = retirée du total (abonnements) ;
- * - "counted" : cochée = prise en compte (achats, salaire reçu).
- */
-export type CheckedMeans = "excluded" | "counted";
 
 /** Server Actions propres à chaque liste. */
 export type PriceListActions = {
   create: (input: PriceItemInput) => Promise<void>;
   update: (id: string, input: PriceItemInput) => Promise<void>;
-  setActive: (id: string, active: boolean) => Promise<void>;
+  setDone: (id: string, done: boolean) => Promise<void>;
   remove: (id: string) => Promise<void>;
 };
 
@@ -32,8 +25,6 @@ export type PriceListLabels = {
   titlePlaceholder: string;
   /** Libellé du champ montant, ex. « Prix (€) » */
   amountLabel: string;
-  /** Action de la case pour les lecteurs d'écran, ex. « Retirer du total » */
+  /** Action de la case pour les lecteurs d'écran, ex. « Marquer comme payé » */
   checkLabel: string;
-  /** Mot du compteur au singulier, ex. « compté », « reçu » */
-  countWord: string;
 };

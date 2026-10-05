@@ -29,7 +29,8 @@ export function groupFromFilter(filter: Filter): string | null {
 type FilterBarProps = {
   items: NamedItem[];
   selected: Filter;
-  labels: { all: string; none: string; create: string; edit: string };
+  /** `none` omis : pas de puce « sans groupe » */
+  labels: { all: string; none?: string; create: string; edit: string };
   /** Icône affichée devant chaque groupe */
   icon?: ReactNode;
   onSelect: (filter: Filter) => void;
@@ -65,9 +66,11 @@ export function FilterBar({ items, selected, labels, icon, onSelect, onCreate, o
         <Chip active={selected === "all"} onClick={() => onSelect("all")}>
           {labels.all}
         </Chip>
-        <Chip active={selected === "none"} onClick={() => onSelect("none")}>
-          {labels.none}
-        </Chip>
+        {labels.none && (
+          <Chip active={selected === "none"} onClick={() => onSelect("none")}>
+            {labels.none}
+          </Chip>
+        )}
         {items.map((item) => (
           <Chip key={item.id} active={selected === item.id} onClick={() => onSelect(item.id)}>
             {icon}

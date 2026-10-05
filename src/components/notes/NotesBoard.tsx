@@ -1,15 +1,7 @@
 "use client";
 
-import { startTransition, useOptimistic, useState, useTransition } from "react";
-import {
-  createFolder,
-  createNote,
-  deleteFolder,
-  deleteNote,
-  renameFolder,
-  updateNote,
-  type NoteInput,
-} from "@/actions/notes";
+import { useState, useTransition } from "react";
+import { createFolder, deleteFolder, renameFolder } from "@/actions/notes";
 import { FolderIcon, NoteIcon, PlusIcon } from "@/components/icons";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -17,46 +9,21 @@ import { FilterBar, groupFromFilter, matchesFilter, resolveFilter, type Filter }
 import { NamedItemSheet, type NamedItemSheetTarget } from "@/components/ui/NamedItemSheet";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { NoteCard } from "./NoteCard";
-import { NoteSheet, type NoteSheetTarget } from "./NoteSheet";
+import { NoteEditor } from "./NoteEditor";
 import type { FolderView, NoteView } from "./types";
 
-type OptimisticAction =
-  | { type: "upsert"; note: NoteView }
-  | { type: "delete"; id: string };
-
-function reducer(notes: NoteView[], action: OptimisticAction): NoteView[] {
-  if (action.type === "delete") return notes.filter((n) => n.id !== action.id);
-  const others = notes.filter((n) => n.id !== action.note.id);
-  return [action.note, ...others];
-}
+/** null = éditeur fermé ; { note: null } = nouvelle note ; { note } = édition. */
+type EditorTarget = null | { note: NoteView | null; key: string };
 
 export function NotesBoard({ notes, folders }: { notes: NoteView[]; folders: FolderView[] }) {
-  const [optimisticNotes, apply] = useOptimistic(notes, reducer);
   const [filter, setFilter] = useState<Filter>("all");
-  const [noteTarget, setNoteTarget] = useState<NoteSheetTarget>(null);
+  const [editor, setEditor] = useState<EditorTarget>(null);
   const [folderTarget, setFolderTarget] = useState<NamedItemSheetTarget>(null);
   const [folderPending, startFolderTransition] = useTransition();
 
   const activeFilter = resolveFilter(filter, folders);
   const folderNames = new Map(folders.map((f) => [f.id, f.name]));
-  const visibleNotes = optimisticNotes.filter((n) => matchesFilter(n.folderId, activeFilter));
-
-  function saveNote(id: string | null, input: NoteInput) {
-    setNoteTarget(null);
-    const note: NoteView = { id: id ?? `temp-${crypto.randomUUID()}`, updatedAt: new Date(), ...input };
-    startTransition(async () => {
-      apply({ type: "upsert", note });
-      await (id ? updateNote(id, input) : createNote(input));
-    });
-  }
-
-  function removeNote(id: string) {
-    setNoteTarget(null);
-    startTransition(async () => {
-      apply({ type: "delete", id });
-      await deleteNote(id);
-    });
-  }
+  const visibleNotes = notes.filter((n) => matchesFilter(n.folderId, activeFilter));
 
   function submitFolder(name: string) {
     const target = folderTarget;
@@ -75,14 +42,12 @@ export function NotesBoard({ notes, folders }: { notes: NoteView[]; folders: Fol
     });
   }
 
-  const defaultFolderId = groupFromFilter(activeFilter);
-
   return (
     <>
       <PageHeader
         title="Notes"
         action={
-          <Button onClick={() => setNoteTarget({ note: null, defaultFolderId })}>
+          <Button onClick={() => setEditor({ note: null, key: crypto.randomUUID() })}>
             <PlusIcon className="size-4" />
             Note
           </Button>
@@ -108,19 +73,21 @@ export function NotesBoard({ notes, folders }: { notes: NoteView[]; folders: Fol
               key={note.id}
               note={note}
               folderName={activeFilter === "all" && note.folderId ? folderNames.get(note.folderId) : undefined}
-              onOpen={(n) => !n.id.startsWith("temp-") && setNoteTarget({ note: n, defaultFolderId: n.folderId })}
+              onOpen={(n) => setEditor({ note: n, key: n.id })}
             />
           ))}
         </div>
       )}
 
-      <NoteSheet
-        target={noteTarget}
-        folders={folders}
-        onClose={() => setNoteTarget(null)}
-        onSave={saveNote}
-        onDelete={removeNote}
-      />
+      {editor && (
+        <NoteEditor
+          key={editor.key}
+          note={editor.note}
+          defaultFolderId={groupFromFilter(activeFilter)}
+          folders={folders}
+          onClose={() => setEditor(null)}
+        />
+      )}
       <NamedItemSheet
         target={folderTarget}
         labels={{

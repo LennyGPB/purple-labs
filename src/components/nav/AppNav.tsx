@@ -11,9 +11,9 @@ import { cn } from "@/lib/cn";
 type NavItem = { href: string; label: string; icon: ComponentType<SVGProps<SVGSVGElement>> };
 
 const items: NavItem[] = [
+  { href: "/budget", label: "Budget", icon: WalletIcon },
   { href: "/todo", label: "TODO", icon: ChecklistIcon },
   { href: "/notes", label: "Notes", icon: NoteIcon },
-  { href: "/budget", label: "Budget", icon: WalletIcon },
 ];
 
 function LogoutButton({ className, withLabel = false }: { className?: string; withLabel?: boolean }) {
@@ -81,8 +81,12 @@ export function AppNav() {
         <LogoutButton className="w-full px-3 py-2.5" withLabel />
       </aside>
 
-      {/* Barre du bas mobile */}
-      <nav className="glass-strong fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+0.75rem)] z-30 flex rounded-2xl p-1.5 md:hidden">
+      {/* Barre du bas mobile : sans fond. Un fondu noir masque le contenu qui défile sous les icônes. */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-20 h-[calc(env(safe-area-inset-bottom)+5rem)] bg-gradient-to-t from-black via-black/90 to-transparent md:hidden"
+      />
+      <nav className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+0.75rem)] z-30 flex p-1.5 md:hidden">
         {items.map(({ href, label, icon: ItemIcon }) => {
           const active = isActive(href);
           return (
@@ -91,8 +95,8 @@ export function AppNav() {
               href={href}
               prefetch
               className={cn(
-                "flex flex-1 flex-col items-center gap-0.5 rounded-xl py-2 text-[11px] font-medium transition-all duration-200",
-                active ? "bg-white/10 text-white [&>svg]:text-violet-400" : "text-zinc-500",
+                "flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors duration-200",
+                active ? "text-white [&>svg]:text-violet-400" : "text-zinc-500",
               )}
             >
               <ItemIcon className={cn("transition-transform duration-200", active && "scale-110")} />

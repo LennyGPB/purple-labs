@@ -5,15 +5,14 @@ import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/session";
 
 /**
- * « Tout décocher » sur les trois listes :
- * les abonnements sont de nouveau comptés, les achats et salaires ne le sont plus.
+ * « Nouveau mois » : abonnements à repayer et salaires à recevoir.
+ * Les achats ne sont pas touchés : c'est une liste d'envies, un article acheté reste acheté.
  */
-export async function uncheckAllBudget(): Promise<void> {
+export async function startNewMonth(): Promise<void> {
   await requireSession();
   await prisma.$transaction([
-    prisma.subscription.updateMany({ where: { active: false }, data: { active: true } }),
-    prisma.purchase.updateMany({ where: { active: true }, data: { active: false } }),
-    prisma.salary.updateMany({ where: { active: true }, data: { active: false } }),
+    prisma.subscription.updateMany({ where: { done: true }, data: { done: false } }),
+    prisma.salary.updateMany({ where: { done: true }, data: { done: false } }),
   ]);
   revalidatePath("/budget");
 }

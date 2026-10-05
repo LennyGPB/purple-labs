@@ -5,7 +5,7 @@ import { requireSession } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Budget · PurpleLabs" };
 
-const select = { id: true, title: true, priceCents: true, active: true } as const;
+const select = { id: true, title: true, priceCents: true, done: true } as const;
 
 export default async function BudgetPage() {
   await requireSession();

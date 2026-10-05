@@ -19,10 +19,12 @@ function toNoteData(input: NoteInput) {
   };
 }
 
-export async function createNote(input: NoteInput): Promise<void> {
+/** Retourne l'id de la note créée (l'éditeur enchaîne ensuite les mises à jour). */
+export async function createNote(input: NoteInput): Promise<string> {
   await requireSession();
-  await prisma.note.create({ data: toNoteData(input) });
+  const note = await prisma.note.create({ data: toNoteData(input) });
   revalidatePath("/notes");
+  return note.id;
 }
 
 export async function updateNote(id: string, input: NoteInput): Promise<void> {

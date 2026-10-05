@@ -6,7 +6,7 @@
 }
 
 @theme {
-  --color-ink: #050506;
+  --color-ink: #000000;
   --animate-fade-in: fade-in 200ms ease-out both;
   /* Invisible pendant 350 ms puis fondu : évite le flash des chargements rapides */
   --animate-fade-in-delayed: fade-in 250ms ease-out 350ms both;
@@ -77,7 +77,6 @@
   color-scheme: dark;
 }
 
-/* Fond uniquement sur <html> : un fond sur <body> masquerait les halos en z-index négatif. */
 html {
   background-color: var(--color-ink);
 }

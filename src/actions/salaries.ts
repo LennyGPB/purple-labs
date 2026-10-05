@@ -18,10 +18,10 @@ export async function updateSalary(id: string, input: PriceItemInput): Promise<v
   revalidatePath("/budget");
 }
 
-/** active = true : salaire reçu, déduit du total. */
-export async function setSalaryActive(id: string, active: boolean): Promise<void> {
+/** done = true : salaire reçu. */
+export async function setSalaryDone(id: string, done: boolean): Promise<void> {
   await requireSession();
-  await prisma.salary.update({ where: { id: requireId(id) }, data: { active: Boolean(active) } });
+  await prisma.salary.update({ where: { id: requireId(id) }, data: { done: Boolean(done) } });
   revalidatePath("/budget");
 }
 

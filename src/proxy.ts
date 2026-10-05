@@ -6,7 +6,7 @@ export async function proxy(request: NextRequest) {
   const authenticated = await verifySessionToken(request.cookies.get(SESSION_COOKIE)?.value);
 
   if (pathname === "/login") {
-    return authenticated ? NextResponse.redirect(new URL("/todo", request.url)) : NextResponse.next();
+    return authenticated ? NextResponse.redirect(new URL("/budget", request.url)) : NextResponse.next();
   }
 
   if (authenticated) return NextResponse.next();

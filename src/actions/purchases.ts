@@ -18,9 +18,10 @@ export async function updatePurchase(id: string, input: PriceItemInput): Promise
   revalidatePath("/budget");
 }
 
-export async function setPurchaseActive(id: string, active: boolean): Promise<void> {
+/** done = true : article acheté, il compte alors dans le budget. */
+export async function setPurchaseDone(id: string, done: boolean): Promise<void> {
   await requireSession();
-  await prisma.purchase.update({ where: { id: requireId(id) }, data: { active: Boolean(active) } });
+  await prisma.purchase.update({ where: { id: requireId(id) }, data: { done: Boolean(done) } });
   revalidatePath("/budget");
 }
 
